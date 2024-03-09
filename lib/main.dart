@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bloc_practice/business_logics/cubit/counter_cubit.dart';
+import 'package:flutter_bloc_practice/presentation/router/app_router.dart';
 import 'package:flutter_bloc_practice/presentation/screen/counter_screen.dart';
 import 'package:flutter_bloc_practice/presentation/screen/second_screen.dart';
 import 'package:flutter_bloc_practice/presentation/screen/third_screen.dart';
@@ -17,14 +18,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final CounterCubit counterCubit = CounterCubit();
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    counterCubit.close();
-    super.dispose();
-  }
+  final AppRouter _appRouter = AppRouter();
 
   @override
   Widget build(BuildContext context) {
@@ -34,21 +28,14 @@ class _MyAppState extends State<MyApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      initialRoute: "/",
-      routes: {
-        "/": (context) => BlocProvider.value(
-              value: counterCubit,
-              child: const CounterScreen(title: "Counter Screen"),
-            ),
-        "/second": (context) => BlocProvider.value(
-              value: counterCubit,
-              child: const SecondScreen(title: "Second Screen"),
-            ),
-        "/third": (context) => BlocProvider.value(
-              value: counterCubit,
-              child: const ThirdScreen(title: "Third Screen"),
-            )
-      },
+      onGenerateRoute: _appRouter.onGenerateRoute,
     );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _appRouter.dispose();
   }
 }
