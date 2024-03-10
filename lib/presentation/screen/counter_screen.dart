@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_bloc_practice/business_logics/cubit/counter_cubit.dart';
+import 'package:flutter_bloc_practice/constants/enums.dart';
+import 'package:flutter_bloc_practice/logic/cubit/counter_cubit.dart';
+import 'package:flutter_bloc_practice/logic/cubit/internet_cubit.dart';
 import 'package:flutter_bloc_practice/presentation/screen/second_screen.dart';
 
 class CounterScreen extends StatefulWidget {
@@ -24,6 +26,37 @@ class _CounterScreenState extends State<CounterScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            BlocBuilder<InternetCubit, InternetState>(
+                builder: (context, state) {
+              if (state is InternetConnected &&
+                  state.connectionType == ConnectionType.Wifi) {
+                return Text(
+                  "Wi-fi",
+                  style: Theme.of(context)
+                      .textTheme
+                      .displaySmall!
+                      .copyWith(color: Colors.green),
+                );
+              } else if (state is InternetConnected &&
+                  state.connectionType == ConnectionType.Mobile) {
+                return Text(
+                  "Mobile",
+                  style: Theme.of(context)
+                      .textTheme
+                      .displaySmall!
+                      .copyWith(color: Colors.red),
+                );
+              } else if (state is InternetDisconnected) {
+                return Text(
+                  "Disconnected",
+                  style: Theme.of(context)
+                      .textTheme
+                      .displaySmall!
+                      .copyWith(color: Colors.yellow),
+                );
+              }
+              return const CircularProgressIndicator();
+            }),
             const Text(
               'You have pushed the button this many times:',
             ),
@@ -82,7 +115,7 @@ class _CounterScreenState extends State<CounterScreen> {
         children: [
           FloatingActionButton(
             onPressed: () {
-              BlocProvider.of<CounterCubit>(context).increment();
+              context.read<CounterCubit>().increment();
             },
             tooltip: 'Increment',
             child: const Icon(Icons.add),
@@ -92,7 +125,7 @@ class _CounterScreenState extends State<CounterScreen> {
           ),
           FloatingActionButton(
             onPressed: () {
-              BlocProvider.of<CounterCubit>(context).decrement();
+              context.read<CounterCubit>().decrement();
             },
             tooltip: 'Decrement',
             child: const Icon(Icons.remove),
